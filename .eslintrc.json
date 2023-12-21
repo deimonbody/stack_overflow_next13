@@ -4,5 +4,8 @@
     "standart",
     "plugin:tailwindcss/recommended",
     "prettier"
-  ]
+  ],
+  "rules": {
+    "camelcase": "off"
+  }
 }
