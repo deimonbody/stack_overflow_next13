@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-// eslint-disable-next-line camelcase
-import { Inter, Space_Grotesk } from "next/font/google";
-import "./globals.css";
+/* eslint-disable camelcase */
 import React from "react";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Inter, Space_Grotesk } from "next/font/google";
+import type { Metadata } from "next";
+
+import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeProvider";
-import "../styles/prism.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,12 +16,13 @@ const inter = Inter({
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-space-grotesk",
+  variable: "--font-spaceGrotesk",
 });
 
 export const metadata: Metadata = {
   title: "DevFlow",
-  description: "A platform",
+  description:
+    "A community-driven platform for asking and answering programming questions. Get help, share knowlede, and collaborate with developers from around the world. Explore topics in web development, mobile app development, algorithms, data structures, and more.",
   icons: {
     icon: "/assets/images/site-logo.svg",
   },
