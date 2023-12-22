@@ -14,12 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { questionsSchema } from "@/lib/validations";
 import { Editor } from "@tinymce/tinymce-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { createQuestion } from "@/lib/actions/question.action";
 import { useRouter, usePathname } from "next/navigation";
+import { QuestionsSchema } from "@/lib/validations";
 const type: any = "create";
 
 interface IProps {
@@ -32,8 +32,8 @@ const Question = ({ mongoUserId }: IProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const form = useForm<z.infer<typeof questionsSchema>>({
-    resolver: zodResolver(questionsSchema),
+  const form = useForm<z.infer<typeof QuestionsSchema>>({
+    resolver: zodResolver(QuestionsSchema),
     defaultValues: {
       title: "",
       explanation: "",
@@ -41,7 +41,7 @@ const Question = ({ mongoUserId }: IProps) => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof questionsSchema>) => {
+  const onSubmit = async (values: z.infer<typeof QuestionsSchema>) => {
     setIsSubmiting(true);
     try {
       await createQuestion({

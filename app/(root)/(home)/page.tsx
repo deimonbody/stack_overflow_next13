@@ -10,7 +10,8 @@ import Link from "next/link";
 import React from "react";
 
 const Home = async () => {
-  const result = await getQuestions({});
+  const { questions } = await getQuestions({});
+
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
@@ -38,8 +39,8 @@ const Home = async () => {
 
       <HomeFilters />
       <div className="mt-10 flex w-full flex-col gap-6">
-        {result.length > 0 ? (
-          result.map((item) => (
+        {questions.length > 0 ? (
+          questions.map((item) => (
             <QuestionCard
               key={item._id}
               _id={item._id}
