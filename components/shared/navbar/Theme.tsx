@@ -1,6 +1,9 @@
 "use client";
+
 import React from "react";
+import Image from "next/image";
 import { useTheme } from "@/context/ThemeProvider";
+
 import {
   Menubar,
   MenubarContent,
@@ -8,7 +11,6 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import Image from "next/image";
 import { themes } from "@/constants";
 
 const Theme = () => {
@@ -17,11 +19,11 @@ const Theme = () => {
   return (
     <Menubar className="relative border-none bg-transparent shadow-none">
       <MenubarMenu>
-        <MenubarTrigger className="focus:bg-light-900 data-[state=open]:bg-light-900 dark:focus:bg-dark-200 dark:data-[state=open]:bg-dark-200">
+        <MenubarTrigger className="focus: bg-light-900 data-[state=open]:bg-light-900 dark:focus:bg-dark-200 dark:data-[state=open]:bg-dark-200">
           {mode === "light" ? (
             <Image
               src="/assets/icons/sun.svg"
-              alt="sun"
+              alt="Sun"
               width={20}
               height={20}
               className="active-theme"
@@ -29,7 +31,7 @@ const Theme = () => {
           ) : (
             <Image
               src="/assets/icons/moon.svg"
-              alt="moon"
+              alt="Moon"
               width={20}
               height={20}
               className="active-theme"
@@ -42,6 +44,7 @@ const Theme = () => {
               key={item.value}
               onClick={() => {
                 setMode(item.value);
+
                 if (item.value !== "system") {
                   localStorage.theme = item.value;
                 } else {

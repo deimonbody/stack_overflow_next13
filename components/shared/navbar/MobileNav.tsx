@@ -1,14 +1,16 @@
 "use client";
+
 import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { SignedOut } from "@clerk/nextjs";
+
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Image from "next/image";
-import Link from "next/link";
-import { SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { sidebarLinks } from "@/constants";
 import { usePathname } from "next/navigation";
@@ -33,11 +35,11 @@ const NavContent = () => {
               } flex items-center justify-start gap-4 bg-transparent p-4`}
             >
               <Image
-                className={`${isActive ? "" : "invert-colors"}`}
                 src={item.imgURL}
                 alt={item.label}
                 width={20}
                 height={20}
+                className={`${isActive ? "" : "invert-colors"}`}
               />
               <p className={`${isActive ? "base-bold" : "base-medium"}`}>
                 {item.label}
@@ -49,15 +51,16 @@ const NavContent = () => {
     </section>
   );
 };
+
 const MobileNav = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Image
           src="/assets/icons/hamburger.svg"
-          alt="Menu"
           width={36}
           height={36}
+          alt="Menu"
           className="invert-colors sm:hidden"
         />
       </SheetTrigger>
@@ -70,9 +73,10 @@ const MobileNav = () => {
             src="/assets/images/site-logo.svg"
             width={23}
             height={23}
-            alt="Devflow"
+            alt="DevFlow"
           />
-          <p className="h2-bold  text-dark100_light900 font-spaceGrotesk ">
+
+          <p className="h2-bold text-dark100_light900 font-spaceGrotesk">
             Dev <span className="text-primary-500">Overflow</span>
           </p>
         </Link>
@@ -80,6 +84,7 @@ const MobileNav = () => {
           <SheetClose asChild>
             <NavContent />
           </SheetClose>
+
           <SignedOut>
             <div className="flex flex-col gap-3">
               <SheetClose asChild>
@@ -89,10 +94,11 @@ const MobileNav = () => {
                   </Button>
                 </Link>
               </SheetClose>
+
               <SheetClose asChild>
-                <Link href="/sign-up">
-                  <Button className="small-medium text-dark400_light900 light-border-2 btn-tertiary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
-                    <span>Sign Up</span>
+                <Link href="/sign-in">
+                  <Button className="small-medium light-border-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
+                    Sign Up
                   </Button>
                 </Link>
               </SheetClose>

@@ -1,7 +1,9 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Editor } from "@tinymce/tinymce-react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -12,26 +14,26 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Editor } from "@tinymce/tinymce-react";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../ui/button";
+import { QuestionsSchema } from "@/lib/validations";
+import { Badge } from "../ui/badge";
 import Image from "next/image";
 import { createQuestion } from "@/lib/actions/question.action";
-import { useRouter, usePathname } from "next/navigation";
-import { QuestionsSchema } from "@/lib/validations";
+import { usePathname, useRouter } from "next/navigation";
+
 const type: any = "create";
 
-interface IProps {
+interface Props {
   mongoUserId: string;
 }
 
-const Question = ({ mongoUserId }: IProps) => {
+const Question = ({ mongoUserId }: Props) => {
   const editorRef = useRef(null);
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
+  // 1. Define your form.
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
     defaultValues: {
@@ -41,9 +43,14 @@ const Question = ({ mongoUserId }: IProps) => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof QuestionsSchema>) => {
-    setIsSubmiting(true);
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+    setIsSubmitting(true);
+
     try {
+      // make an async call to your API - create a question
+      // contain all form data
+
       await createQuestion({
         title: values.title,
         content: values.explanation,
@@ -51,12 +58,13 @@ const Question = ({ mongoUserId }: IProps) => {
         author: JSON.parse(mongoUserId),
         path: pathname,
       });
+
       router.push("/");
     } catch (error) {
     } finally {
-      setIsSubmiting(false);
+      setIsSubmitting(false);
     }
-  };
+  }
 
   const handleInputKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -64,20 +72,23 @@ const Question = ({ mongoUserId }: IProps) => {
   ) => {
     if (e.key === "Enter" && field.name === "tags") {
       e.preventDefault();
+
       const tagInput = e.target as HTMLInputElement;
       const tagValue = tagInput.value.trim();
+
       if (tagValue !== "") {
         if (tagValue.length > 15) {
           return form.setError("tags", {
             type: "required",
-            message: "Tag must be at least 15 characters",
+            message: "Tag must be less than 15 characters",
           });
         }
-      }
-      if (!field.value.includes(tagValue as never)) {
-        form.setValue("tags", [...field.value, tagValue]);
-        tagInput.value = "";
-        form.clearErrors("tags");
+
+        if (!field.value.includes(tagValue as never)) {
+          form.setValue("tags", [...field.value, tagValue]);
+          tagInput.value = "";
+          form.clearErrors("tags");
+        }
       } else {
         form.trigger();
       }
@@ -86,9 +97,9 @@ const Question = ({ mongoUserId }: IProps) => {
 
   const handleTagRemove = (tag: string, field: any) => {
     const newTags = field.value.filter((t: string) => t !== tag);
+
     form.setValue("tags", newTags);
   };
-
   return (
     <Form {...form}>
       <form
@@ -101,17 +112,16 @@ const Question = ({ mongoUserId }: IProps) => {
           render={({ field }) => (
             <FormItem className="flex w-full flex-col">
               <FormLabel className="paragraph-semibold text-dark400_light800">
-                Question Title
-                <span className="text-primary-500">*</span>
+                Question Title <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl className="mt-3.5">
                 <Input
-                  {...field}
                   className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
+                  {...field}
                 />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Be specific and imagine you`re asking a questions to another
+                Be specific and imagine you&apos;re asking a question to another
                 person.
               </FormDescription>
               <FormMessage className="text-red-500" />
@@ -124,19 +134,19 @@ const Question = ({ mongoUserId }: IProps) => {
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-3">
               <FormLabel className="paragraph-semibold text-dark400_light800">
-                Detailed explanation of your problem
+                Detailed expalanation of your problem{" "}
                 <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl className="mt-3.5">
                 <Editor
-                  apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
+                  apiKey={process.env.NEXT_PUBLIC_TINY_MCE_API_KEY}
                   onInit={(evt, editor) => {
                     // @ts-ignore
                     editorRef.current = editor;
                   }}
-                  initialValue=""
                   onBlur={field.onBlur}
                   onEditorChange={(content) => field.onChange(content)}
+                  initialValue=""
                   init={{
                     height: 350,
                     menubar: false,
@@ -147,23 +157,23 @@ const Question = ({ mongoUserId }: IProps) => {
                       "link",
                       "image",
                       "charmap",
-                      "print",
                       "preview",
                       "anchor",
                       "searchreplace",
                       "visualblocks",
-                      "codesample",
+                      "code",
                       "fullscreen",
                       "insertdatetime",
                       "media",
                       "table",
+                      "paste",
+                      "codesample",
                     ],
                     toolbar:
                       "undo redo | " +
-                      "codesample | bold italic forecolor | alignleft aligncenter | " +
-                      "alignright alignjustify | bullist numlist ",
-                    content_style:
-                      "body { font-family:Inter,; font-size:16px }",
+                      "codesample | bold italic forecolor | alignleft aligncenter |" +
+                      "alignright alignjustify | bullist numlist",
+                    content_style: "body { font-family:Inter; font-size:16px }",
                   }}
                 />
               </FormControl>
@@ -181,29 +191,27 @@ const Question = ({ mongoUserId }: IProps) => {
           render={({ field }) => (
             <FormItem className="flex w-full flex-col">
               <FormLabel className="paragraph-semibold text-dark400_light800">
-                Tags
-                <span className="text-primary-500">*</span>
+                Tags <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl className="mt-3.5">
                 <>
                   <Input
-                    onKeyDown={(e) => handleInputKeyDown(e, field)}
-                    placeholder="Add tags..."
                     className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
+                    placeholder="Add tags..."
+                    onKeyDown={(e) => handleInputKeyDown(e, field)}
                   />
                   {field.value.length > 0 && (
                     <div className="flex-start mt-2.5 gap-2.5">
                       {field.value.map((tag: any) => (
                         <Badge
-                          onClick={() => handleTagRemove(tag, field)}
                           key={tag}
-                          className="subtle-medium background-light800_dark300 text-light400_light500 
-                          flex items-center justify-center gap-2 rounded-md border-none px-4 py-2 capitalize"
+                          className="subtle-medium background-light800_dark300 text-light400_light500 flex items-center justify-center gap-2 rounded-md border-none px-4 py-2 capitalize"
+                          onClick={() => handleTagRemove(tag, field)}
                         >
                           {tag}
                           <Image
                             src="/assets/icons/close.svg"
-                            alt="Close icons"
+                            alt="Close icon"
                             width={12}
                             height={12}
                             className="cursor-pointer object-contain invert-0 dark:invert"
@@ -215,7 +223,7 @@ const Question = ({ mongoUserId }: IProps) => {
                 </>
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Add up to 3 tags to describe what your question is about.You
+                Add up to 3 tags to describe what your question is about. You
                 need to press enter to add a tag.
               </FormDescription>
               <FormMessage className="text-red-500" />
@@ -225,12 +233,12 @@ const Question = ({ mongoUserId }: IProps) => {
         <Button
           type="submit"
           className="primary-gradient w-fit !text-light-900"
-          disabled={isSubmiting}
+          disabled={isSubmitting}
         >
-          {isSubmiting ? (
-            <>{type === "edit" ? "Editing...." : "Posting..."}</>
+          {isSubmitting ? (
+            <>{type === "Edit" ? "Editing..." : "Posting..."}</>
           ) : (
-            <>{type === "edit" ? "Edit question" : "Ask a Question"}</>
+            <>{type === "Edit" ? "Edit Question" : "Ask a Question"}</>
           )}
         </Button>
       </form>
