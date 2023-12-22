@@ -5,8 +5,6 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user.actions";
 
-export const maxDuration = 500; // This function can run for a maximum of 5 seconds
-
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.NEXT_CLERK_WEBHOOK_SECRET;
